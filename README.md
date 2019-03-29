@@ -16,7 +16,7 @@ The file `helpers.h` contains functions to help you set up the `sockaddr_in` str
 ### Download code
 
 ```
-$ git clone https://github.com/eecs482/bgreeves.sockets.starter.git
+$ git clone https://github.com/eecs482/bgreeves-socket-example.git
 ```
 
 ### Compile examples
