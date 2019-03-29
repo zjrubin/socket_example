@@ -1,7 +1,8 @@
+#include <arpa/inet.h>		// ntohs()
 #include <stdio.h>		// printf(), perror()
 #include <stdlib.h>		// atoi()
 #include <string.h>		// strlen()
-#include <sys/socket.h>		// socket(), connect()
+#include <sys/socket.h>		// socket(), connect(), send(), recv()
 #include <unistd.h>		// close()
 
 #include "helpers.h"		// make_client_sockaddr()
@@ -48,7 +49,7 @@ int send_message(const char *hostname, int port, const char *message) {
 int main(int argc, const char **argv) {
 	// Parse command line arguments
 	if (argc != 4) {
-		printf("Usage: ./server hostname port_num message\n");
+		printf("Usage: ./client hostname port_num message\n");
 		return 1;
 	}
 	const char *hostname = argv[1];

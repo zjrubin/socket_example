@@ -1,6 +1,7 @@
+#include <arpa/inet.h>		// htons()
 #include <stdio.h>		// printf(), perror()
 #include <stdlib.h>		// atoi()
-#include <sys/socket.h>		// socket(), bind(), listen(), accept()
+#include <sys/socket.h>		// socket(), bind(), listen(), accept(), send(), recv()
 #include <unistd.h>		// close()
 
 #include "helpers.h"		// make_server_sockaddr(), get_port_number()
@@ -19,11 +20,14 @@ static const int MAX_MESSAGE_SIZE = 256;
  */
 int handle_connection(int connectionfd) {
 
+	printf("New connection %d\n", connectionfd);
+
 	// (1) Receive message from client.
 	char msg[MAX_MESSAGE_SIZE];
 	memset(msg, 0, sizeof(msg));
 
 	for (int i = 0; i < MAX_MESSAGE_SIZE; i++) {
+		// Receive exactly one byte
 		int rval = recv(connectionfd, msg + i, 1, MSG_WAITALL);
 		if (rval == -1) {
 			perror("Error reading stream message");
@@ -40,10 +44,12 @@ int handle_connection(int connectionfd) {
 
 	// (3) Send response code to client
 	int response = 42;
+	response = htons(response);
         if (send(connectionfd, &response, sizeof(response), 0) == -1) {
                 perror("Error sending response to client");
                 return -1;
         }
+
 
 	// (4) Close connection
 	close(connectionfd);

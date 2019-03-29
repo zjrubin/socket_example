@@ -1,6 +1,7 @@
+#include <arpa/inet.h>		// htons()
 #include <stdio.h>		// printf(), perror()
 #include <stdlib.h>		// atoi()
-#include <sys/socket.h>		// socket(), bind(), listen(), accept()
+#include <sys/socket.h>		// socket(), bind(), listen(), accept(), send(), recv()
 #include <unistd.h>		// close()
 
 #include "helpers.h"		// make_server_sockaddr(), get_port_number()
@@ -18,6 +19,8 @@ static const int MAX_MESSAGE_SIZE = 256;
  *		0 on success, -1 on failure.
  */
 int handle_connection(int connectionfd) {
+
+	printf("New connection %d\n", connectionfd);
 
 	// (1) Receive message from client.
 
