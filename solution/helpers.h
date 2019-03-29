@@ -1,29 +1,16 @@
-/**
- * This is the really whack part about making sockets. Let me try to explain
- * what is going on here.
- *
- * Unix sockets get bind()-ed to a `sockaddr_in` struct. This struct holds
- * information about where (which network address) the socket will be receiving
- * or sending data to (we think of this as a hostname-port pair).
- * It also holds some other metadata like the socket family.
- *
- * The syntax for working with these sockaddr_in structs is kinda whack.
- * This is just one of those things that you just have to accept 
- * that it works and not question it too much. I'll try to walk you through
- * it with comments to the best of my ability.
- */
-
-#include <arpa/inet.h>	// ntohs()
+#include <arpa/inet.h>		// htons(), ntohs()
 #include <netdb.h>		// gethostbyname(), struct hostent
-#include <netinet/in.h>	// struct sockaddr_in
-#include <stdio.h>		// printf()
+#include <netinet/in.h>		// struct sockaddr_in
+#include <stdio.h>		// perror(), fprintf()
 #include <string.h>		// memcpy()
+#include <sys/socket.h>		// getsockname()
+#include <unistd.h>		// stderr
 
 /**
  * Make a server sockaddr given a port.
  * Parameters:
- *		addr: The sockaddr to modify (this is a C-style function).
- *		port: The port on which to listen for incoming connections.
+ *		addr: 	The sockaddr to modify (this is a C-style function).
+ *		port: 	The port on which to listen for incoming connections.
  * Returns:
  *		0 on success, -1 on failure.
  * Example:
@@ -42,8 +29,8 @@ int make_server_sockaddr(struct sockaddr_in *addr, int port) {
 
 	// Step (3): Set the port value.
 	// If port is 0, the OS will choose the port for us.
-	// Use ntohs to convert from local byte order to network byte order.
-	addr->sin_port = ntohs(port);
+	// Use htons to convert from local byte order to network byte order.
+	addr->sin_port = htons(port);
 
 	return 0;
 }
@@ -51,9 +38,9 @@ int make_server_sockaddr(struct sockaddr_in *addr, int port) {
 /**
  * Make a client sockaddr given a remote hostname and port.
  * Parameters:
- *		addr: The sockaddr to modify (this is a C-style function).
- *		hostname: The hostname of the remote host to connect to.
- *		port: The port to use to connect to the remote hostname.
+ *		addr: 		The sockaddr to modify (this is a C-style function).
+ *		hostname: 	The hostname of the remote host to connect to.
+ *		port: 		The port to use to connect to the remote hostname.
  * Returns:
  *		0 on success, -1 on failure.
  * Example:
@@ -70,14 +57,34 @@ int make_client_sockaddr(struct sockaddr_in *addr, const char *hostname, int por
 	// to convert a hostname string to a useable `hostent` struct.
 	struct hostent *host = gethostbyname(hostname);
 	if (host == nullptr) {
-		printf("Error: Unknown host %s\n", hostname);
+		fprintf(stderr, "%s: unknown host\n", hostname);
 		return -1;
 	}
 	memcpy(&(addr->sin_addr), host->h_addr, host->h_length);
 
 	// Step (3): Set the port value.
-	// Use ntohs to convert from local byte order to network byte order.
-	addr->sin_port = ntohs(port);
+	// Use htons to convert from local byte order to network byte order.
+	addr->sin_port = htons(port);
 
 	return 0;
 }
+
+/**
+ * Return the port number assigned to a socket.
+ *
+ * Parameters:
+ * 		sockfd:	File descriptor of a socket
+ *
+ * Returns:
+ *		The port number of the socket, or -1 on failure.
+ */
+ int get_port_number(int sockfd) {
+ 	struct sockaddr_in addr;
+	socklen_t length = sizeof(addr);
+	if (getsockname(sockfd, (sockaddr *) &addr, &length) == -1) {
+		perror("Error getting port of socket");
+		return -1;
+	}
+	// Use ntohs to convert from network byte order to host byte order.
+	return ntohs(addr.sin_port);
+ }
