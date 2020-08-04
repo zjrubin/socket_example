@@ -1,4 +1,4 @@
-#include "Utility.h"	// make_client_sockaddr()
+#include "utility.h"	// make_client_sockaddr()
 #include <arpa/inet.h>	// ntohs()
 #include <cstdio>		// printf(), perror()
 #include <cstdlib>		// atoi()

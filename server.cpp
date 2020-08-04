@@ -1,4 +1,4 @@
-#include "Utility.h"   // make_server_sockaddr(), get_port_number()
+#include "utility.h"   // make_server_sockaddr(), get_port_number()
 #include <arpa/inet.h> // htons()
 #include <cstring>
 #include <cstdio>		// printf(), perror()

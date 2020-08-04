@@ -3,10 +3,10 @@ CXXFLAGS = -g -std=c++17 -pedantic
 
 all: server client
 
-server: server.cpp Utility.o
+server: server.cpp utility.cpp
 	$(CXX) $(CXXFLAGS) $^ -o server
 
-client: client.cpp Utility.o
+client: client.cpp utility.cpp
 	$(CXX) $(CXXFLAGS) $^ -o client
 
 clean:
