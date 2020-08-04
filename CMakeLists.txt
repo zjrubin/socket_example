@@ -10,12 +10,12 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(client
-    client.cpp
-    utility.cpp)
+    src/client.cpp
+    src/utility.cpp)
 
 add_executable(server
-    server.cpp
-    utility.cpp)
+    src/server.cpp
+    src/utility.cpp)
 
 # target_link_libraries(hello_world PRIVATE say_hello)
 
