@@ -1,24 +1,24 @@
-#include "Utility.h"		// make_client_sockaddr()
-#include <arpa/inet.h>		// ntohs()
+#include "Utility.h"	// make_client_sockaddr()
+#include <arpa/inet.h>	// ntohs()
 #include <cstdio>		// printf(), perror()
 #include <cstdlib>		// atoi()
 #include <cstring>		// strlen()
-#include <sys/socket.h>		// socket(), connect(), send(), recv()
+#include <sys/socket.h> // socket(), connect(), send(), recv()
 #include <unistd.h>		// close()
 
 int send_message(const char *hostname, int port, const char *message);
 
-int main(int argc, char* argv[]) 
+int main(int argc, char *argv[])
 {
-	if (argc != 4) 
+	if (argc != 4)
 	{
 		printf("Usage: ./client hostname port_num message\n");
 		return 1;
 	}
 
-	const char* hostname = argv[1];
+	const char *hostname = argv[1];
 	int port = atoi(argv[2]);
-	const char* message = argv[3];
+	const char *message = argv[3];
 	printf("Sending message %s to %s:%d\n", message, hostname, port);
 
 	int response;
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	{
 		response = send_message(hostname, port, message);
 	}
-	catch (Error& e)
+	catch (Error &e)
 	{
 		perror(e.msg);
 		return 1;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
  * Returns:
  *		The server's response code on success, -1 on failure.
  */
-int send_message(const char *hostname, int port, const char *message) 
+int send_message(const char *hostname, int port, const char *message)
 {
 	if (MAX_MESSAGE_SIZE < strlen(message))
 		throw Error("Error: Message exceeds maximum length\n");
@@ -64,9 +64,9 @@ int send_message(const char *hostname, int port, const char *message)
 	make_client_sockaddr(&addr, hostname, port);
 
 	// (3) Connect to remote server
-	if (connect(sockfd, (sockaddr *) &addr, sizeof(addr)) == -1)
+	if (connect(sockfd, (sockaddr *)&addr, sizeof(addr)) == -1)
 		throw Error("Error connecting stream socket");
-	
+
 	// (4) Send message to remote server
 	if (send(sockfd, message, strlen(message) + 1, 0) == -1)
 		throw Error("Error sending on stream socket");

@@ -1,9 +1,9 @@
-#include "Utility.h"		// make_server_sockaddr(), get_port_number()
-#include <arpa/inet.h>		// htons()
+#include "Utility.h"   // make_server_sockaddr(), get_port_number()
+#include <arpa/inet.h> // htons()
 #include <cstring>
 #include <cstdio>		// printf(), perror()
 #include <cstdlib>		// atoi()
-#include <sys/socket.h>		// socket(), bind(), listen(), accept(), send(), recv()
+#include <sys/socket.h> // socket(), bind(), listen(), accept(), send(), recv()
 #include <unistd.h>		// close()
 
 int run_server(int port, int queue_size);
@@ -22,12 +22,12 @@ int main(int argc, const char **argv)
 		int port = atoi(argv[1]);
 		run_server(port, 10);
 	}
-	catch(Error& e)
+	catch (Error &e)
 	{
 		perror(e.msg);
 		return 1;
 	}
-	catch(...)
+	catch (...)
 	{
 		perror("Unknown exception caught! Exiting...");
 		return 1;
@@ -62,9 +62,9 @@ int run_server(int port, int queue_size)
 	struct sockaddr_in addr;
 	make_server_sockaddr(&addr, port);
 
-	if (bind(sockfd, (sockaddr *) &addr, sizeof(addr)) == -1)
+	if (bind(sockfd, (sockaddr *)&addr, sizeof(addr)) == -1)
 		throw Error("Error binding stream socket");
-	
+
 	// (3b) Detect which port was chosen
 	port = get_port_number(sockfd);
 	printf("Server listening on port %d...\n", port);
@@ -84,7 +84,7 @@ int run_server(int port, int queue_size)
 }
 
 /**
- * Receives a null-terminated string message from the client, prints it to stdout, 
+ * Receives a null-terminated string message from the client, prints it to stdout,
  * then sends the integer 42 back to the client as a success code.
  *
  * Parameters:
@@ -109,7 +109,8 @@ int handle_connection(int connectionfd)
 			throw Error("Error reading stream message");
 
 		// Stop if we received a null character
-		if (msg[i] == '\0') break;
+		if (msg[i] == '\0')
+			break;
 	}
 
 	// (2) Print out the message
@@ -117,7 +118,7 @@ int handle_connection(int connectionfd)
 
 	// (3) Send response code to client
 	int response = htons(42);
-	if (send(connectionfd, &response, sizeof(response), 0) == -1) 
+	if (send(connectionfd, &response, sizeof(response), 0) == -1)
 		throw Error("Error sending response to client");
 
 	// (4) Close connection
