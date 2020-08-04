@@ -117,7 +117,7 @@ int handle_connection(int connectionfd)
 	printf("Client %d says '%s'\n", connectionfd, msg);
 
 	// (3) Send response code to client
-	int response = htons(42);
+	uint16_t response = htons(42);
 	if (send(connectionfd, &response, sizeof(response), 0) == -1)
 		throw Error("Error sending response to client");
 
